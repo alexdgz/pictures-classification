@@ -15,11 +15,12 @@ IMG_LISTING = "img_files_listing.txt"
 PATTERN = '(IMG|VID)_(?P<year>[12][09][0129][0-9])-(?P<month>[01][0-9])-[0123][0-9]_[0-9]{6}'
 
 
-'''
-Produce a secure hash (digest) from a file and the secure blake2b (vs. SHA and MD5) algorithm,
-to be able to find duplicates
-'''
 def hash_file(path: str, blocksize: int = 65536) -> str:
+    '''
+    Produce a secure hash (digest) from a file and the secure blake2b (vs. SHA and MD5) algorithm,
+    to be able to find duplicates
+    '''
+
     hashcode = hashlib.blake2b(digest_size=32)      # limit digest size to 32 bytes (default/max= 64).
     with open(path, "rb") as f:
         chunk = f.read(blocksize)
@@ -29,10 +30,11 @@ def hash_file(path: str, blocksize: int = 65536) -> str:
     return hashcode.hexdigest()
 
 
-'''
-add a secure hash to the index
-'''
 def add_digest(path: str, digests: dict) -> None:
+    '''
+    add a secure hash to the index
+    '''
+
     hashcode: str = hash_file(path)
     if hashcode in digests:  # found a duplicate file
         digests[hashcode] += [path]
@@ -40,11 +42,13 @@ def add_digest(path: str, digests: dict) -> None:
         digests[hashcode] = [path]
 
 
-'''
-move the image file from its input location to the output dir.
-perform a bunch of tests and updates before proceeding. 
-'''
+
 def move_file(root: str, filename: str, year: str, month: str) -> None:
+    '''
+    move the image file from its input location to the output dir.
+    perform a bunch of tests and updates before proceeding. 
+    '''
+    
     path: str = os.path.join(root, filename)
     new_root: str = os.path.join(OUT_DIR, year, month)
     new_path: str = os.path.join(new_root, filename)
@@ -63,11 +67,13 @@ def move_file(root: str, filename: str, year: str, month: str) -> None:
     os.renames(path, new_path)
 
 
-'''
-initialize the digest index for duplicate elimination,
-from an existing json serialization of previous hashs
-'''
+
 def load_digests() -> dict:
+    '''
+    initialize the digest index for duplicate elimination,
+    from an existing json serialization of previous hashs
+    '''
+    
     d: dict = {}
     hasfile_path: str = os.path.join(LOG_DIR, DIGESTS)
     if os.path.exists(hasfile_path):
@@ -76,10 +82,11 @@ def load_digests() -> dict:
     return d
 
 
-'''
-save secure hashes of image files to be used later on
-'''
 def save_digests(d: dict) -> None:
+    '''
+    save secure hashes of image files to be used later on
+    '''
+    
     # create log/ dir if it doesn't already exist (otherwise, silently pass)
     os.makedirs(LOG_DIR, exist_ok=True)
     hashfile_path: str = os.path.join(LOG_DIR, DIGESTS)
