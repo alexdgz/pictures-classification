@@ -3,6 +3,7 @@ import re
 import os.path
 import hashlib
 import json
+import datetime
 
 IMG_DIR = "/Pictures/lib"
 #FILE_EXTS = ['.JPG', '.jpg', '.RW2', '.AVI', '.tif', '.CR2', '.MOV', '.BMP', '.mp4', '.MPG', '.jpeg', '.png', '.avi', '.tiff', '.gif']
@@ -10,7 +11,7 @@ FILE_EXTS = ['.jpg', '.mp4']
 OUT_DIR = "/Pictures/out"
 LOG_DIR = "log"
 DIGESTS = "hashfiles.json"
-IMG_LISTING = "img_files_listing.txt"
+IMG_LISTING = "img_files_listing"
 #PATTERN = '(?P<year>[12][09][0129][0-9])-(?P<month>[01][0-9])-[0123][0-9]'
 PATTERN = '(IMG|VID)_(?P<year>[12][09][0129][0-9])-(?P<month>[01][0-9])-[0123][0-9]_[0-9]{6}'
 
@@ -50,7 +51,7 @@ def move_file(root: str, filename: str, year: str, month: str) -> None:
     '''
     
     path: str = os.path.join(root, filename)
-    new_root: str = os.path.join(OUT_DIR, year, month)
+    new_root: str = os.path.join(OUT_DIR, year, year + '-' + month)
     new_path: str = os.path.join(new_root, filename)
     basename, ext = os.path.splitext(filename)
 
@@ -130,7 +131,7 @@ def list_all_files():
     exts: dict = {}
     # create log/ dir if it doesn't already exist (otherwise, silently pass)
     os.makedirs(LOG_DIR, exist_ok=True)
-    listingfile_path: str = os.path.join(LOG_DIR, IMG_LISTING)
+    listingfile_path: str = os.path.join(LOG_DIR, IMG_LISTING + "-" + datetime.datetime.now().isoformat() + ".txt")
 
     # recursively traverse all the file tree
     with open(listingfile_path, "w") as out:
@@ -183,7 +184,23 @@ def deduplicate_all_files() -> None:
 #    save_digests(digests)
 
 
+def split_dirs(step: int=100) -> None:
+    pass
+    '''
+    # recursively traverse all the file tree
+    for root, _, files in os.walk(IMG_DIR):
+        print(root)
+        if len(files) > max_size:
+            files.sort()
+            counter: int = 0
+            
+            while counter < len(files)
+    '''            
+
+
 if __name__ == '__main__':
-    deduplicate_all_files()
-#    list_all_files()
-#    move_all_files()
+#    list_all_files()           # step 1
+#    move_all_files()           # step 2
+#    deduplicate_all_files()    # step 3
+    split_dirs()                # step 4
+#   list_all_files()            # step 5
